@@ -15,8 +15,7 @@ def home(request):
     activities = []
 
     view_this_week = (request.GET.get("submit") == "this_week") or (
-        not from_date and not to_date
-        and not request.GET.get("submit")
+        not from_date and not to_date and not request.GET.get("submit")
     )
     if view_this_week:
         need_redirect = False
@@ -33,7 +32,11 @@ def home(request):
             to_date = week_to_date
             need_redirect = True
         if need_redirect:
-            return redirect("/?from_date={}&to_date={}&submit=this_week".format(from_date, to_date))
+            return redirect(
+                "/?from_date={}&to_date={}&submit=this_week".format(
+                    from_date, to_date
+                )
+            )
 
     view_last_week = request.GET.get("submit") == "last_week"
     if view_last_week:
@@ -49,7 +52,9 @@ def home(request):
             to_date = to_datetime.strftime("%d/%m/%Y")
             need_redirect = True
         if need_redirect:
-            return redirect("/?from_date={}&to_date={}".format(from_date, to_date))
+            return redirect(
+                "/?from_date={}&to_date={}".format(from_date, to_date)
+            )
 
     if from_date or to_date:
         if from_date:
@@ -114,7 +119,9 @@ def home(request):
                 current_week_distance.save()
             else:
                 models.WeekDistance.objects.create(
-                    distance=total_week_distance, user=request.user, week=from_datetime.date()
+                    distance=total_week_distance,
+                    user=request.user,
+                    week=from_datetime.date(),
                 )
 
         paginator = Paginator(activities, 20)  # Show n results per page
