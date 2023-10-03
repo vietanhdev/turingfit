@@ -1,7 +1,8 @@
 from .base import *
+from os import environ
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "1_zrwwz(3wk+je0e0*s552gdbb+m)ft9f#1&27tmw@f^b7jri1dfg"
+SECRET_KEY = environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
