@@ -1,18 +1,27 @@
 # TuringFit
 
-The following config variables are required when deploying to production:
+TuringFit ([turingfit.com](https://turingfit.com)) is a Strava weekly ranking app for sport challenges.
 
-* ADMIN_EMAIL
-* ADMIN_NAME
-* DEFAULT_FROM_EMAIL
-* DJANGO_SETTINGS_MODULE set as turingfit.settings.production
-* EMAIL_HOST
-* EMAIL_HOST_PASSWORD
-* EMAIL_HOST_USER
-* EMAIL_PORT
-* SECRET_KEY
+![Screenshot](screenshot.png)
 
-Then the following two variables that are given to you when you create an application on strava.com
+Then the following variables that are given to you when you create an application on **strava.com**.
 
-* STRAVA_SECRET
-* STRAVA_KEY
+* `STRAVA_SECRET`
+* `STRAVA_KEY`
+* `SECRET_KEY`
+
+## 1. Environment Setup
+
+- Python 3.8 or higher with Pip
+
+```
+pip install -r requirements.txt
+```
+
+## 2. Run Developement Server
+
+
+```
+python manage.py migrate
+python manage.py runserver 0.0.0.0:8000
+```
