@@ -1,0 +1,9 @@
+logfile
+core/__pycache__/
+core/migrations/__pycache__/
+turingfit/staticfiles/
+turingfit/__pycache__/
+turingfit/settings/__pycache__/
+.DS_Store
+.env
+database.db
