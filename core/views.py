@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from django.utils.timezone import datetime, timedelta
 
 from core import models
 from django.contrib.auth.decorators import login_required
@@ -105,14 +105,14 @@ def home(request):
         # If view this week, update total week distance
         if view_this_week:
             current_week_distance = models.WeekDistance.objects.filter(
-                user=request.user
+                user=request.user, week=from_datetime.date()
             ).first()
             if current_week_distance:
                 current_week_distance.distance = total_week_distance
                 current_week_distance.save()
             else:
                 models.WeekDistance.objects.create(
-                    distance=total_week_distance, user=request.user
+                    distance=total_week_distance, user=request.user, week=from_datetime.date()
                 )
 
         paginator = Paginator(activities, 20)  # Show n results per page
@@ -126,7 +126,9 @@ def home(request):
             activities = paginator.page(paginator.num_pages)
 
     # Leaderboard
-    leaderboard = models.WeekDistance.objects.order_by("-distance")[:100]
+    leaderboard = models.WeekDistance.objects.filter(
+        week__gte=datetime.today() - timedelta(days=7)
+    ).order_by("-distance")
 
     return render(
         request,
