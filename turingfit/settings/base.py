@@ -76,6 +76,7 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_STRAVA_KEY = env["STRAVA_KEY"]
 SOCIAL_AUTH_STRAVA_SECRET = env["STRAVA_SECRET"]
 SOCIAL_AUTH_STRAVA_SCOPE = ["activity:read_all"]
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "https://turingfit.com/oauth/complete/strava/"
 
 LOGIN_URL = "login"
 LOGOUT_URL = "logout"
