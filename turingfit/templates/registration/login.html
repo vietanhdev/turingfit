@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div>
+    <h1 class="text-center mt-3">Welcome to TuringFit!</h1>
+    <p class="text-center mt-3">
+        Let's start by connecting your Strava account. Click the button below to get started.
+    </p>
+</div>
 <h1 class="text-center mt-3"><a href="{% url 'social:begin' 'strava' %}">Login</a></h1>
 {% endblock %}

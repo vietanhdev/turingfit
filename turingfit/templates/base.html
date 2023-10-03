@@ -30,7 +30,7 @@
     <header>
       {% if user.is_authenticated %}
         <h3 class="text-center mt-3">
-          You are signed in as <strong>{{ user.username }}</strong> /
+          You are signed in as <strong>{{ user.first_name }} {{ user.last_name }}</strong> /
           <a href="{% url 'logout' %}">logout</a>
         </h3>
       {% endif %}

@@ -1,6 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<hr/>
+
+<h2 class="text-center mt-3">Leaderboard</h2>
+
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th>Name</th>
+            <th>Distance</th>
+        </tr>
+    </thead>
+{% for u in leaderboard %}
+    <tr>
+        <td>{{ u.user.first_name }} {{ u.user.last_name }}</td>
+        <td>{{ u.distance }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+<h2 class="text-center mt-3">Personal Activities</h2>
+
 {% if from_date and to_date %}
 <h3 class="text-center mt-3">Activities between {{ from_date }} and {{ to_date }}.</h3>
 {% elif from_date %}
@@ -11,20 +33,21 @@
 <hr/>
 <div class="dates">
     <form method="get">
-        <div class="form-group">
+        <div class="form-group d-none">
             <label class="control-label" for="date">From</label>
             <input class="form-control" id="date" name="from_date" placeholder="DD/MM/YYYY" type="text" autocomplete="off"/>
         </div>
-        <div class="form-group">
+        <div class="form-group d-none">
             <label class="control-label" for="date">To</label>
             <input class="form-control" id="date" name="to_date" placeholder="DD/MM/YYYY" type="text" autocomplete="off"/>
         </div>
         <div class="form-group">
-            <button class="btn btn-primary " name="submit" type="submit">Submit</button>
+            <button class="btn btn-success" name="submit" type="submit" value="this_week">View this week</button>
+            <button class="btn btn-default" name="submit" type="submit" value="last_week">View last week</button>
+            <button class="btn btn-default d-none" name="submit" type="submit">View in selected time</button>
         </div>
     </form>
 </div>
-<hr/>
 
 <ul class="pagination justify-content-center mt-3">
     {% if activities.has_previous %}
@@ -37,6 +60,7 @@
     <li class="page-item"><a class="page-link" href="?page={{ activities.next_page_number }}&from_date={{ from_date }}&to_date={{ to_date }}"><i class="fa fa-angle-right"></i></a></li>
     {% endif%}
 </ul>
+
 <table class="table">
     <thead class="thead-light">
         <tr>
