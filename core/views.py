@@ -20,15 +20,17 @@ def home(request):
     )
     if view_this_week:
         need_redirect = False
-        if not from_date:
-            from_datetime = datetime.today()
-            from_datetime -= timedelta(days=from_datetime.weekday())
-            from_date = from_datetime.strftime("%d/%m/%Y")
+        from_datetime = datetime.today()
+        from_datetime -= timedelta(days=from_datetime.weekday())
+        week_from_date = from_datetime.strftime("%d/%m/%Y")
+        if not from_date or from_date != week_from_date:
+            from_date = week_from_date
             need_redirect = True
-        if not to_date:
-            to_datetime = datetime.today()
-            to_datetime += timedelta(days=6 - to_datetime.weekday())
-            to_date = to_datetime.strftime("%d/%m/%Y")
+        to_datetime = datetime.today()
+        to_datetime += timedelta(days=6 - to_datetime.weekday())
+        week_to_date = to_datetime.strftime("%d/%m/%Y")
+        if not to_date or to_date != week_to_date:
+            to_date = week_to_date
             need_redirect = True
         if need_redirect:
             return redirect("/?from_date={}&to_date={}&submit=this_week".format(from_date, to_date))
