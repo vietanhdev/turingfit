@@ -7,4 +7,4 @@ turingfit/settings/__pycache__/
 .DS_Store
 .env
 database.db
-sync_strava.log
+sync_strava.*
