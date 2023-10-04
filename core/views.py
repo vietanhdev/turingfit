@@ -12,6 +12,8 @@ from .strava import get_access_token_with_verification
 @login_required
 def home(request):
     activities = None
+    from_date = None
+    to_date = None
     if settings.SHOW_PERSONAL_ACTIVITIES:
         activities = []
         from_date = request.GET.get("from_date")
