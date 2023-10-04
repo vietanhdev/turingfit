@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from django.utils.timezone import datetime, timedelta
 
 from core import models
@@ -68,13 +70,19 @@ def home(request):
 
         page = request.GET.get("page")
 
-        # get access token
-        social = request.user.social_auth.get(provider="strava")
-        token = social.extra_data["access_token"]
-
-        # get activity details
+        # Get access token
+        # TODO: Handle expired access token
+        # Only refresh if needed
         client = Client()
-        client.access_token = token
+        social = request.user.social_auth.get(provider="strava")
+        refresh_token = social.extra_data["refresh_token"]
+        token_response = client.refresh_access_token(client_id=settings.SOCIAL_AUTH_STRAVA_KEY,
+            client_secret=settings.SOCIAL_AUTH_STRAVA_SECRET,
+            refresh_token=refresh_token)
+        access_token = token_response["access_token"]
+
+        # Get activity details
+        client.access_token = access_token
 
         if from_date and to_date:
             query = client.get_activities(
