@@ -21,6 +21,8 @@
 {% endfor %}
 </table>
 
+{% if activities %}
+
 <h2 class="text-center mt-3">Personal Activities</h2>
 
 {% if from_date and to_date %}
@@ -79,4 +81,6 @@
     </tr>
 {% endfor %}
 </table>
+{% endif%}
+
 {% endblock %}

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .strava import sync_user_weekly_distance
 
 
-@task(schedule=10 * 60)
+@task(schedule=60 * 60)
 def sync_strava():
     file_rotation_handler = logging.handlers.RotatingFileHandler(
         "sync_strava.log", maxBytes=100000, backupCount=5
