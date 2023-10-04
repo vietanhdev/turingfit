@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "workers",
     "social_django",
     "core",
 ]
@@ -76,6 +77,19 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_STRAVA_KEY = env["STRAVA_KEY"]
 SOCIAL_AUTH_STRAVA_SECRET = env["STRAVA_SECRET"]
 SOCIAL_AUTH_STRAVA_SCOPE = ["activity:read_all"]
+SOCIAL_AUTH_PIPELINE = (
+    "social_core.pipeline.social_auth.social_details",
+    "social_core.pipeline.social_auth.social_uid",
+    "social_core.pipeline.social_auth.auth_allowed",
+    "social_core.pipeline.social_auth.social_user",
+    "social_core.pipeline.user.get_username",
+    "social_core.pipeline.social_auth.associate_by_email",  # <--- enable this one
+    "social_core.pipeline.user.create_user",
+    "social_core.pipeline.social_auth.associate_user",
+    "social_core.pipeline.social_auth.load_extra_data",
+    "social_core.pipeline.user.user_details",
+    "core.auth.save_strava_auth",
+)
 
 LOGIN_URL = "login"
 LOGOUT_URL = "logout"
@@ -92,7 +106,4 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Activate Django-Heroku.
-import django_heroku
-
-django_heroku.settings(locals())
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

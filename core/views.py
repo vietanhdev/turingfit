@@ -1,12 +1,11 @@
-from django.conf import settings
-
 from django.utils.timezone import datetime, timedelta
-
 from core import models
 from django.contrib.auth.decorators import login_required
-from stravalib.client import Client
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
+from stravalib.client import Client
+
+from .strava import get_access_token_with_verification
 
 
 @login_required
@@ -58,89 +57,57 @@ def home(request):
                 "/?from_date={}&to_date={}".format(from_date, to_date)
             )
 
-    if from_date or to_date:
-        if from_date:
-            from_datetime = datetime.strptime(
-                from_date + " 00:00:00", "%d/%m/%Y %H:%M:%S"
-            )
-        if to_date:
-            to_datetime = datetime.strptime(
-                to_date + " 23:59:59", "%d/%m/%Y %H:%M:%S"
-            )
+    if from_date:
+        from_datetime = datetime.strptime(
+            from_date + " 00:00:00", "%d/%m/%Y %H:%M:%S"
+        )
+    if to_date:
+        to_datetime = datetime.strptime(
+            to_date + " 23:59:59", "%d/%m/%Y %H:%M:%S"
+        )
 
-        page = request.GET.get("page")
+    page = request.GET.get("page")
 
-        # Get access token
-        # TODO: Handle expired access token
-        # Only refresh if needed
-        client = Client()
-        social = request.user.social_auth.get(provider="strava")
-        refresh_token = social.extra_data["refresh_token"]
-        token_response = client.refresh_access_token(client_id=settings.SOCIAL_AUTH_STRAVA_KEY,
-            client_secret=settings.SOCIAL_AUTH_STRAVA_SECRET,
-            refresh_token=refresh_token)
-        access_token = token_response["access_token"]
+    # Get activities
+    access_token = get_access_token_with_verification(request.user)
+    client = Client(access_token=access_token)
 
-        # Get activity details
-        client.access_token = access_token
+    if from_date and to_date:
+        query = client.get_activities(before=to_datetime, after=from_datetime)
+    elif from_date:
+        query = client.get_activities(after=from_datetime)
+    else:  # to_date
+        query = client.get_activities(before=to_datetime)
 
-        if from_date and to_date:
-            query = client.get_activities(
-                before=to_datetime, after=from_datetime
-            )
-        elif from_date:
-            query = client.get_activities(after=from_datetime)
-        else:  # to_date
-            query = client.get_activities(before=to_datetime)
+    for activity in query:
+        if from_date and not to_date:
+            index = 0
+        else:
+            index = len(activities)
 
-        total_week_distance = 0.0
-        for activity in query:
-            if from_date and not to_date:
-                index = 0
-            else:
-                index = len(activities)
+        activities.insert(
+            index,
+            {
+                "id": activity.id,
+                "name": activity.name,
+                "distance": activity.distance.num / 1000,
+                "type": activity.type,
+                "link": "https://www.strava.com/activities/{}".format(
+                    activity.id
+                ),
+                "date": activity.start_date_local,
+            },
+        )
 
-            activities.insert(
-                index,
-                {
-                    "id": activity.id,
-                    "name": activity.name,
-                    "distance": activity.distance.num / 1000,
-                    "type": activity.type,
-                    "link": "https://www.strava.com/activities/{}".format(
-                        activity.id
-                    ),
-                    "date": activity.start_date_local,
-                },
-            )
-
-            if view_this_week and activity.type in ("Run", "Walk"):
-                total_week_distance += activity.distance.num / 1000
-
-        # If view this week, update total week distance
-        if view_this_week:
-            current_week_distance = models.WeekDistance.objects.filter(
-                user=request.user, week=from_datetime.date()
-            ).first()
-            if current_week_distance:
-                current_week_distance.distance = total_week_distance
-                current_week_distance.save()
-            else:
-                models.WeekDistance.objects.create(
-                    distance=total_week_distance,
-                    user=request.user,
-                    week=from_datetime.date(),
-                )
-
-        paginator = Paginator(activities, 20)  # Show n results per page
-        try:
-            activities = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            activities = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            activities = paginator.page(paginator.num_pages)
+    paginator = Paginator(activities, 20)  # Show n results per page
+    try:
+        activities = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        activities = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        activities = paginator.page(paginator.num_pages)
 
     # Leaderboard
     leaderboard = models.WeekDistance.objects.filter(

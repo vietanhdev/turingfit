@@ -1,1 +1,0 @@
-web: gunicorn turingfit.wsgi --log-file -
