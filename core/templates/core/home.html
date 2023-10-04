@@ -16,7 +16,7 @@
 {% for u in leaderboard %}
     <tr>
         <td>{{ u.user.first_name }} {{ u.user.last_name }}</td>
-        <td>{{ u.distance }}</td>
+        <td>{{ u.distance }} km</td>
     </tr>
 {% endfor %}
 </table>
@@ -74,7 +74,7 @@
     <tr>
         <td>{{ activity.type }}</td>
         <td><a href="{{ activity.link }}">{{ activity.name }}</a></td>
-        <td>{{ activity.distance }}</td>
+        <td>{{ activity.distance }} km</td>
         <td>{{ activity.date }}</td>
     </tr>
 {% endfor %}
